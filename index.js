@@ -14,7 +14,7 @@ const server = express();
 
 //we have no code for handling http GET requests to the / URL. This is what the server.get function does
 server.get('/', (req, res) => {
-    res.send('hellowwwww')
+    res.send('<h2>hellowwwww</h2>')
 })
 
 // see a list of hubs: find() method 
@@ -29,7 +29,18 @@ server.get('/hubs', (req, res) => {
         })
 })
 
-// create a hub
+// create a hub using add() -POST-
+server.post('/hubs', (req, res) => {
+    const hubInfo = result
+    Hubs.add(hubInfo)
+        .then(result => {
+            res.
+        })
+        .catch(error => {
+            res.status(500).json({message: 'error getting the list of hubs', error})
+        })
+})
+
 // update a hub
 // delete a hub
 
