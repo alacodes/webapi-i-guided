@@ -6,7 +6,8 @@ const express = require('express'); //same as line 1
 const Hubs = require('./data/hubs-model');
 
 const server = express();
-//add this line to teach express to parse in JSON
+
+//express.json() teaches express to parse JSON
 server.use(express.json())
 
 server.get('/', (req, res) => {
@@ -30,7 +31,7 @@ server.get('/hubs', (req, res) => {
 server.post('/hubs', (req, res) => {
     //http messages are objs with headers and bodies. Example => { headers: {}, body: {all data sent by client}}
     const hubInformation = req.body;
-    console.log( 'hub body', hubInformation)
+    console.log('new hub added: ', hubInformation)
     Hubs.add(hubInformation)
         .then(result => {
             res.status(201).json(result);
@@ -40,9 +41,35 @@ server.post('/hubs', (req, res) => {
         })
 })
 
-//delete Hub
-//update Hub
+//delete Hub using remove() and DELETE 
+server.delete('/hubs/:id', (req, res) => {
+    const hubId = req.params.id;
+    Hubs.remove(hubId)
+        .then(hub => {
+            res.status(200).json({message: "hub deleted"})
+        })
+        .catch(error => {
+            res.status(500).json({message: 'error deleting hub'});
+        });
+});
 
+//update Hub using update() and PUT
+server.put('/hubs/:id', (req, res)=> {
+    const { id } = req.params;
+    const changes = req.body;
+
+    Hubs.update(id, changes)
+        .then( updated => {
+            if(updated) {
+                res.status(200).json(updated);
+            } else {
+                res.status(404).json({message: "hub not found"})
+            }
+        })
+        .catch( error => {
+            res.status(500).json({message: "error updating hub"})
+        })
+})
 const port = 8000;
 server.listen(port, () => console.log('API is running'));
 
