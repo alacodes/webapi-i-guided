@@ -1,57 +1,62 @@
 //import express from 'express'; //ES2015 Modules
 const express = require('express'); //same as line 1
 
+//import hubs-model-file, check what options hubs gives us
+// the hubs-model has exported methods to: find, findById, add, remove, update
+const Hubs = require('./data/hubs-model');
 
-
-//import the hubs-model file
-const Hubs = require('./data/hubs-model'); //use Hubs to get access to the database (kind of like a 3rd party)
-
-//Methods incl. in Hubs: find(), findById(), add(), remove(), update()
-
-//creates server
 const server = express();
+//add this line to teach express to parse in JSON
+server.use(express.json())
 
-
-//we have no code for handling http GET requests to the / URL. This is what the server.get function does
 server.get('/', (req, res) => {
-    res.send('<h2>hellowwwww</h2>')
+    res.send("<h1>Stop trying to make fetch happen!</h1>");
 })
 
-// see a list of hubs: find() method 
+//see a list of Hubs (slack channels) using find method included in hubs-model
 server.get('/hubs', (req, res) => {
+    //Hubs.find() returns a promise, we need req,res, .then().catch()
     Hubs.find()
         .then(hubs => {
-
-            res.status(200).json(hubs); //.json will try to convert the data passed into JSON
+            //lets client know the request went through. ".json" will convert the data passed to JSON. This tells the client we're sending JSON through an HTTP header
+            res.status(200).json(hubs);
         })
         .catch(error => {
-            res.status(500).json({message: 'error getting the list of hubs'})
+            res.status(500).json({message: "error getting list of hubs"})
         })
 })
 
-// create a hub using add() -POST-
+//create Hub using add() method and POST request
 server.post('/hubs', (req, res) => {
-    const hubInfo = result
-    Hubs.add(hubInfo)
+    //http messages are objs with headers and bodies. Example => { headers: {}, body: {all data sent by client}}
+    const hubInformation = req.body;
+    console.log( 'hub body', hubInformation)
+    Hubs.add(hubInformation)
         .then(result => {
-            res.
+            res.status(201).json(result);
         })
         .catch(error => {
-            res.status(500).json({message: 'error getting the list of hubs', error})
+            res.status(500).json({message: "error adding hub"})
         })
 })
 
-// update a hub
-// delete a hub
-
-
-
-
-
-
-
-
-
+//delete Hub
+//update Hub
 
 const port = 8000;
 server.listen(port, () => console.log('API is running'));
+
+
+
+
+
+
+
+
+/* 
+steps for section 1: 
+'npm i express'
+add 'index.js'
+added code to set up server
+'npm run server' starts the api
+*/
